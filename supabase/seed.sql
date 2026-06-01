@@ -71,26 +71,27 @@ BEGIN
      'Handgebreide Vest — Meerkleurig', 'Unieke vest met kleurrijke strepen. Handgebreid in Groningen, 100% Alpaca wol. Levertijd 2-4 weken.', 'truien', 18900, 'published', false)
   ON CONFLICT (id) DO NOTHING;
 
-  -- Product afbeeldingen (Unsplash kleding foto's)
+  -- Product afbeeldingen — professionele fashion fotografie via Unsplash
   INSERT INTO public.product_images (product_id, url, position)
   VALUES
-    -- Studio Noor trui
-    ('c0000000-0000-0000-0000-000000000001', 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&q=80', 0),
-    ('c0000000-0000-0000-0000-000000000001', 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&q=80', 1),
-    -- Studio Noor broek
-    ('c0000000-0000-0000-0000-000000000002', 'https://images.unsplash.com/photo-1594938298603-c8148c4b8b79?w=800&q=80', 0),
-    ('c0000000-0000-0000-0000-000000000002', 'https://images.unsplash.com/photo-1551854838-212c50b4c184?w=800&q=80', 1),
-    -- Roos & Co hoodie
-    ('c0000000-0000-0000-0000-000000000003', 'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&q=80', 0),
-    ('c0000000-0000-0000-0000-000000000003', 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&q=80', 1),
-    -- Roos & Co cargo
-    ('c0000000-0000-0000-0000-000000000004', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=80', 0),
-    -- Label Mila blazer
-    ('c0000000-0000-0000-0000-000000000005', 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80', 0),
-    ('c0000000-0000-0000-0000-000000000005', 'https://images.unsplash.com/photo-1548624149-f9b4f5d47ec4?w=800&q=80', 1),
-    -- De Draad vest
-    ('c0000000-0000-0000-0000-000000000006', 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&q=80', 0),
-    ('c0000000-0000-0000-0000-000000000006', 'https://images.unsplash.com/photo-1520975954732-35dd22299614?w=800&q=80', 1)
+    -- Studio Noor: Merino Wollen Trui Crème
+    ('c0000000-0000-0000-0000-000000000001', 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&q=85', 0),
+    ('c0000000-0000-0000-0000-000000000001', 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=800&q=85', 1),
+    -- Studio Noor: Wide Leg Broek Zwart
+    ('c0000000-0000-0000-0000-000000000002', 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&q=85', 0),
+    ('c0000000-0000-0000-0000-000000000002', 'https://images.unsplash.com/photo-1594938298603-c8148c4b8b79?w=800&q=85', 1),
+    -- Roos & Co: Grafisch Hoodie Oranje/Zwart
+    ('c0000000-0000-0000-0000-000000000003', 'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&q=85', 0),
+    ('c0000000-0000-0000-0000-000000000003', 'https://images.unsplash.com/photo-1525171254930-643fc658b64e?w=800&q=85', 1),
+    -- Roos & Co: Cargo Broek Groen
+    ('c0000000-0000-0000-0000-000000000004', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=85', 0),
+    ('c0000000-0000-0000-0000-000000000004', 'https://images.unsplash.com/photo-1529391409740-59f2cea08bc6?w=800&q=85', 1),
+    -- Label Mila: Asymmetrische Blazer Ecru
+    ('c0000000-0000-0000-0000-000000000005', 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=85', 0),
+    ('c0000000-0000-0000-0000-000000000005', 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800&q=85', 1),
+    -- De Draad: Handgebreide Vest Meerkleurig
+    ('c0000000-0000-0000-0000-000000000006', 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&q=85', 0),
+    ('c0000000-0000-0000-0000-000000000006', 'https://images.unsplash.com/photo-1578932750294-f5075e85f44a?w=800&q=85', 1)
   ON CONFLICT DO NOTHING;
 
   -- Varianten

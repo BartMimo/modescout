@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { ShoppingBag, Menu, X, Search, User } from 'lucide-react'
+import { ShoppingBag, Menu, X, Search, User, ChevronDown } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useCart } from './CartProvider'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
@@ -21,9 +21,7 @@ export default function Navbar() {
   }
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) loadUser(data.user)
-    })
+    supabase.auth.getUser().then(({ data }) => { if (data.user) loadUser(data.user) })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       if (session?.user) loadUser(session.user)
       else setNavUser(null)
@@ -34,12 +32,10 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#F2F2F2]">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        {/* Logo */}
         <Link href="/" className="font-black text-xl tracking-tight shrink-0">
           Mode<span className="bg-[#CDFF00] px-1 rounded">Scout</span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
           {[
             { href: '/zoeken', label: 'Ontdekken' },
@@ -48,14 +44,12 @@ export default function Navbar() {
             { href: '/categorie/jassen', label: 'Jassen' },
             { href: '/categorie/hoodies', label: 'Hoodies' },
           ].map(item => (
-            <Link key={item.href} href={item.href}
-              className="px-3 py-2 rounded-full hover:bg-[#F2F2F2] transition-colors">
+            <Link key={item.href} href={item.href} className="px-3 py-2 rounded-full hover:bg-[#F2F2F2] transition-colors">
               {item.label}
             </Link>
           ))}
         </nav>
 
-        {/* Actions */}
         <div className="flex items-center gap-1">
           <Link href="/zoeken" className="p-2 rounded-full hover:bg-[#F2F2F2] transition-colors" aria-label="Zoeken">
             <Search size={20} />
@@ -63,23 +57,22 @@ export default function Navbar() {
 
           {navUser ? (
             <div className="relative group">
-              <button className="p-2 rounded-full hover:bg-[#F2F2F2] transition-colors" aria-label="Account">
-                <User size={20} />
+              <button className="flex items-center gap-1.5 px-3 py-2 rounded-full hover:bg-[#F2F2F2] transition-colors text-sm font-medium" aria-label="Account">
+                <User size={16} />
+                <ChevronDown size={14} className="text-[#999]" />
               </button>
-              <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-[#F2F2F2] rounded-2xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all text-sm overflow-hidden">
-                <div className="px-4 py-3 text-[#999] text-xs border-b border-[#F2F2F2] truncate bg-[#FAFAF7]">{navUser.email}</div>
+              <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-[#E0E0E0] rounded-2xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all text-sm overflow-hidden">
+                <div className="px-4 py-3 text-[#666] text-xs border-b border-[#F2F2F2] truncate">{navUser.email}</div>
                 <div className="p-1.5 space-y-0.5">
-                  <Link href="/bestellingen" className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-[#F2F2F2] transition-colors">Mijn bestellingen</Link>
+                  <Link href="/bestellingen" className="block px-3 py-2 rounded-xl hover:bg-[#F2F2F2] transition-colors">Mijn bestellingen</Link>
                   {(navUser.role === 'brand' || navUser.role === 'admin') && (
-                    <Link href="/dashboard" className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-[#F2F2F2] transition-colors">Dashboard</Link>
+                    <Link href="/dashboard" className="block px-3 py-2 rounded-xl hover:bg-[#F2F2F2] transition-colors">Dashboard</Link>
                   )}
                   {navUser.role === 'admin' && (
-                    <Link href="/admin" className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-[#F2F2F2] transition-colors">Admin</Link>
+                    <Link href="/admin" className="block px-3 py-2 rounded-xl hover:bg-[#F2F2F2] transition-colors">Admin</Link>
                   )}
-                  <button
-                    onClick={() => supabase.auth.signOut()}
-                    className="w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors mt-1 border-t border-[#F2F2F2] pt-2"
-                  >
+                  <button onClick={() => supabase.auth.signOut()}
+                    className="w-full text-left block px-3 py-2 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors border-t border-[#F2F2F2] mt-1 pt-2">
                     Uitloggen
                   </button>
                 </div>
@@ -94,7 +87,7 @@ export default function Navbar() {
           <Link href="/mandje" className="relative p-2 rounded-full hover:bg-[#F2F2F2] transition-colors" aria-label="Mandje">
             <ShoppingBag size={20} />
             {itemCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-[#CDFF00] text-[#0D0D0D] text-[10px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-white">
+              <span className="absolute -top-0.5 -right-0.5 bg-[#CDFF00] text-[#0D0D0D] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white">
                 {itemCount > 9 ? '9+' : itemCount}
               </span>
             )}
@@ -106,26 +99,25 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {open && (
-        <div className="md:hidden bg-white border-t border-[#F2F2F2] px-4 py-4 space-y-1">
+        <div className="md:hidden bg-white border-t border-[#F2F2F2] px-4 py-3 space-y-0.5">
           {[
-            { href: '/zoeken', label: '🔍 Ontdekken' },
-            { href: '/categorie/truien', label: '🧶 Truien' },
-            { href: '/categorie/broeken', label: '👖 Broeken' },
-            { href: '/categorie/jassen', label: '🧥 Jassen' },
-            { href: '/categorie/hoodies', label: '👕 Hoodies' },
+            { href: '/zoeken', label: 'Ontdekken' },
+            { href: '/categorie/truien', label: 'Truien' },
+            { href: '/categorie/broeken', label: 'Broeken' },
+            { href: '/categorie/jassen', label: 'Jassen' },
+            { href: '/categorie/hoodies', label: 'Hoodies' },
           ].map(item => (
             <Link key={item.href} href={item.href} onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm transition-colors">
+              className="block px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm transition-colors">
               {item.label}
             </Link>
           ))}
-          <div className="border-t border-[#F2F2F2] pt-2 mt-2">
-            {!navUser && <Link href="/inloggen" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm">Inloggen / Registreren</Link>}
-            {navUser && <Link href="/bestellingen" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm">Mijn bestellingen</Link>}
+          <div className="border-t border-[#F2F2F2] pt-2 mt-2 space-y-0.5">
+            {!navUser && <Link href="/inloggen" onClick={() => setOpen(false)} className="block px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm">Inloggen</Link>}
+            {navUser && <Link href="/bestellingen" onClick={() => setOpen(false)} className="block px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm">Mijn bestellingen</Link>}
             {(navUser?.role === 'brand' || navUser?.role === 'admin') && (
-              <Link href="/dashboard" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm">Dashboard</Link>
+              <Link href="/dashboard" onClick={() => setOpen(false)} className="block px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm">Dashboard</Link>
             )}
           </div>
         </div>

@@ -96,10 +96,10 @@ export default async function AdminMerkenPage({
 
                 {/* Meta info */}
                 <div className="flex flex-wrap gap-3 mt-2 text-xs text-[#999]">
-                  {brand.legal_name && <span>🏢 {brand.legal_name}</span>}
+                  {brand.legal_name && <span>{brand.legal_name}</span>}
                   {brand.kvk_number && <span>KvK: {brand.kvk_number}</span>}
-                  {brand.charges_enabled && <span className="text-blue-600">✓ Stripe actief</span>}
-                  {brand.featured && <span className="text-[#0D0D0D] font-medium">★ Uitgelicht</span>}
+                  {brand.charges_enabled && <span className="text-green-600 font-medium">Stripe actief</span>}
+                  {brand.featured && <span className="text-[#0D0D0D] font-semibold">Uitgelicht</span>}
                   <span>{new Date(brand.created_at).toLocaleDateString('nl-NL')}</span>
                 </div>
 

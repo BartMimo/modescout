@@ -88,8 +88,8 @@ export default function InloggenPage() {
         </>
       )}
       <div className="mt-6 text-center">
-        <Link href="/demo" className="inline-flex items-center gap-2 bg-[#CDFF00] text-[#0D0D0D] font-semibold text-sm px-4 py-2 rounded-full hover:bg-[#b8e600] transition-colors">
-          ⚡ Demo-toegang
+        <Link href="/demo" className="text-sm text-[#666] hover:underline">
+          Demo-toegang
         </Link>
       </div>
     </div>

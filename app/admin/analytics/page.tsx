@@ -150,6 +150,6 @@ export default async function AdminAnalyticsPage() {
 }
 
 const COUNTRY_NAMES: Record<string, string> = {
-  NL: '🇳🇱 Nederland', BE: '🇧🇪 België', DE: '🇩🇪 Duitsland', GB: '🇬🇧 Verenigd Koninkrijk',
-  FR: '🇫🇷 Frankrijk', US: '🇺🇸 Verenigde Staten', ES: '🇪🇸 Spanje', IT: '🇮🇹 Italië',
+  NL: 'Nederland', BE: 'België', DE: 'Duitsland', GB: 'Verenigd Koninkrijk',
+  FR: 'Frankrijk', US: 'Verenigde Staten', ES: 'Spanje', IT: 'Italië',
 }
