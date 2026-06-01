@@ -1,8 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { createServiceClient } from '@/lib/supabase/server'
 
-export const revalidate = 60
-
 export default async function AdminAnalyticsPage() {
   const supabase = await createServiceClient()
 
@@ -15,30 +13,15 @@ export default async function AdminAnalyticsPage() {
     { count: totalViews },
     { count: todayViews },
     { count: weekViews },
-    { data: topPages },
-    { data: topCountries },
-    { data: topCities },
+    { data: rawViews },
     { data: recentViews },
   ] = await Promise.all([
     supabase.from('page_views').select('id', { count: 'exact', head: true }),
     supabase.from('page_views').select('id', { count: 'exact', head: true }).gte('created_at', today),
     supabase.from('page_views').select('id', { count: 'exact', head: true }).gte('created_at', last7),
-    // Top pages (last 30d)
-    supabase.rpc('top_pages', { since: last30, limit_n: 10 }).catch(() => ({ data: null })),
-    // Top countries
-    supabase.rpc('top_countries', { since: last30, limit_n: 10 }).catch(() => ({ data: null })),
-    // Top cities
-    supabase.rpc('top_cities', { since: last30, limit_n: 10 }).catch(() => ({ data: null })),
-    // Recent 20
+    supabase.from('page_views').select('path, country, city').gte('created_at', last30),
     supabase.from('page_views').select('path, country, city, created_at').order('created_at', { ascending: false }).limit(20),
   ])
-
-  // Fallback: manual aggregation if RPCs don't exist yet
-  const { data: rawViews } = await supabase
-    .from('page_views')
-    .select('path, country, city, created_at')
-    .gte('created_at', last30)
-    .order('created_at', { ascending: false })
 
   const pageCounts: Record<string, number> = {}
   const countryCounts: Record<string, number> = {}
@@ -53,17 +36,15 @@ export default async function AdminAnalyticsPage() {
   const sortedPages = Object.entries(pageCounts).sort((a, b) => b[1] - a[1]).slice(0, 10)
   const sortedCountries = Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).slice(0, 8)
   const sortedCities = Object.entries(cityCounts).sort((a, b) => b[1] - a[1]).slice(0, 8)
-
   const maxPageViews = sortedPages[0]?.[1] ?? 1
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold mb-1">Analytics</h1>
-        <p className="text-sm text-[#666]">Paginabezoeken bijgehouden via eigen tracker + Vercel Analytics</p>
+        <p className="text-sm text-[#666]">Paginabezoeken — eigen tracker + Vercel Analytics</p>
       </div>
 
-      {/* Overview stats */}
       <div className="grid grid-cols-3 gap-3 md:gap-4">
         <div className="bg-white border border-[#E0E0DA] rounded-2xl p-4">
           <p className="text-xs text-[#666] mb-1">Totaal views</p>
@@ -80,24 +61,20 @@ export default async function AdminAnalyticsPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Top pages */}
         <div className="bg-white border border-[#E0E0DA] rounded-2xl p-5">
           <h2 className="font-semibold mb-4">Meest bezochte pagina's (30d)</h2>
           {sortedPages.length === 0 ? (
-            <p className="text-sm text-[#999]">Nog geen data. Voer de analytics-migratie uit in Supabase.</p>
+            <p className="text-sm text-[#999]">Nog geen data. Voer migrations/002_analytics.sql uit in Supabase.</p>
           ) : (
             <div className="space-y-3">
               {sortedPages.map(([path, count]) => (
                 <div key={path}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-[#555] truncate max-w-[200px] font-mono text-xs">{path}</span>
+                    <span className="text-[#555] font-mono text-xs truncate max-w-[200px]">{path}</span>
                     <span className="font-semibold shrink-0 ml-2">{count}</span>
                   </div>
                   <div className="h-1.5 bg-[#F0F0EA] rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#CDFF00] rounded-full transition-all"
-                      style={{ width: `${Math.round((count / maxPageViews) * 100)}%` }}
-                    />
+                    <div className="h-full bg-[#CDFF00] rounded-full" style={{ width: `${Math.round((count / maxPageViews) * 100)}%` }} />
                   </div>
                 </div>
               ))}
@@ -105,13 +82,11 @@ export default async function AdminAnalyticsPage() {
           )}
         </div>
 
-        {/* Geographic */}
         <div className="space-y-4">
-          {/* Countries */}
           <div className="bg-white border border-[#E0E0DA] rounded-2xl p-5">
             <h2 className="font-semibold mb-3">Landen (30d)</h2>
             {sortedCountries.length === 0 ? (
-              <p className="text-sm text-[#999]">Geen locatiedata. Op Vercel worden de headers automatisch ingevuld.</p>
+              <p className="text-sm text-[#999]">Geen locatiedata. Op Vercel worden landen automatisch herkend.</p>
             ) : (
               <div className="space-y-2">
                 {sortedCountries.map(([country, count]) => (
@@ -124,7 +99,6 @@ export default async function AdminAnalyticsPage() {
             )}
           </div>
 
-          {/* Cities */}
           {sortedCities.length > 0 && (
             <div className="bg-white border border-[#E0E0DA] rounded-2xl p-5">
               <h2 className="font-semibold mb-3">Steden (30d)</h2>
@@ -141,7 +115,6 @@ export default async function AdminAnalyticsPage() {
         </div>
       </div>
 
-      {/* Recent views */}
       <div className="bg-white border border-[#E0E0DA] rounded-2xl p-5">
         <h2 className="font-semibold mb-4">Recente bezoeken</h2>
         <div className="overflow-x-auto">
@@ -155,7 +128,7 @@ export default async function AdminAnalyticsPage() {
               </tr>
             </thead>
             <tbody>
-              {(recentViews ?? []).map((v: any, i: number) => (
+              {(recentViews ?? []).map((v, i) => (
                 <tr key={i} className="border-b border-[#F8F8F4] last:border-0">
                   <td className="py-2 font-mono text-xs text-[#555]">{v.path}</td>
                   <td className="py-2 text-[#666]">{v.country ? (COUNTRY_NAMES[v.country] ?? v.country) : '—'}</td>
