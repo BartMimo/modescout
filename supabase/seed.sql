@@ -1,5 +1,5 @@
 -- ============================================================
--- ModeScout Seed Data
+-- ModeScout Seed Data — met echte Unsplash foto's
 -- Voer dit uit NADAT je een account hebt aangemaakt in de app
 -- ============================================================
 DO $$
@@ -9,63 +9,89 @@ BEGIN
   SELECT id INTO v_owner_id FROM public.profiles LIMIT 1;
 
   IF v_owner_id IS NULL THEN
-    RAISE EXCEPTION 'Geen gebruiker gevonden. Maak eerst een account aan via /registreren en probeer opnieuw.';
+    RAISE EXCEPTION 'Geen gebruiker gevonden. Maak eerst een account aan via /registreren.';
   END IF;
 
   UPDATE public.profiles SET role = 'admin' WHERE id = v_owner_id;
 
-  -- Merken (UUID hex-only: 00000001 t/m 00000004)
-  INSERT INTO public.brands (id, owner_id, name, slug, tagline, story, status, charges_enabled, payouts_enabled, featured, legal_name, commission_rate)
+  -- Merken
+  INSERT INTO public.brands (id, owner_id, name, slug, tagline, story, status, charges_enabled, payouts_enabled, featured, legal_name, commission_rate, logo_url)
   VALUES
     ('a0000000-0000-0000-0000-000000000001', v_owner_id, 'Studio Noor', 'studio-noor',
      'Minimalistische mode vanuit Amsterdam',
      'Studio Noor is opgericht door Noor van den Berg in 2021. Vanuit haar atelier in Amsterdam-Noord ontwerpt ze tijdloze basics met een eigenzinnige twist. Elk stuk is gemaakt van duurzame materialen en in kleine series geproduceerd.',
-     'active', true, true, true, 'Studio Noor BV', 0.15),
+     'active', true, true, true, 'Studio Noor BV', 0.15,
+     'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80'),
     ('a0000000-0000-0000-0000-000000000002', v_owner_id, 'Roos & Co', 'roos-en-co',
      'Kleurrijke streetwear uit Rotterdam',
-     'Roos & Co brengt kleur en energie naar de straat. Opgegroeid in Rotterdam, geïnspireerd door de stad. Alle prints worden door Roos zelf ontworpen.',
-     'active', true, true, true, 'Roos en Co', 0.15),
+     'Roos & Co brengt kleur en energie naar de straat. Opgegroeid in Rotterdam, geïnspireerd door de stad. Alle prints worden door Roos zelf ontworpen en de collecties worden twee keer per jaar gelanceerd.',
+     'active', true, true, true, 'Roos en Co', 0.15,
+     'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=400&q=80'),
     ('a0000000-0000-0000-0000-000000000003', v_owner_id, 'Label Mila', 'label-mila',
      'Duurzame avant-garde uit Utrecht',
-     'Label Mila staat voor mode die nadenkt. Mila Smit combineert avant-garde silhouetten met duurzame productie in Europa.',
-     'active', true, true, false, 'Label Mila', 0.15),
+     'Label Mila staat voor mode die nadenkt. Mila Smit combineert avant-garde silhouetten met duurzame productie in Europa. Haar stukken zijn investeringen — ontworpen om decennia mee te gaan.',
+     'active', true, true, false, 'Label Mila', 0.15,
+     'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80'),
     ('a0000000-0000-0000-0000-000000000004', v_owner_id, 'De Draad', 'de-draad',
      'Handgemaakt knitwear, elk stuk uniek',
-     'De Draad is een klein knitwear-label uit Groningen. Elk stuk wordt met de hand gebreid. Wachttijden van 2-4 weken zijn normaal — en de moeite waard.',
-     'active', true, true, false, 'De Draad', 0.15)
+     'De Draad is een klein knitwear-label uit Groningen. Oprichtster Lien breit elk stuk met de hand of op een kleine knitmachine. Geen twee exemplaren zijn identiek.',
+     'active', true, true, false, 'De Draad', 0.15,
+     'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400&q=80')
   ON CONFLICT (id) DO NOTHING;
 
   -- Producten Studio Noor
   INSERT INTO public.products (id, brand_id, title, description, category, base_price_cents, status, featured)
   VALUES
     ('c0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001',
-     'Merino Wollen Trui — Crème', 'Tijdloze trui van 100% merino wol. Licht, warm en heerlijk zacht op de huid. Machine-wasbaar op 30°.', 'truien', 12900, 'published', true),
+     'Merino Wollen Trui — Crème', 'Tijdloze trui van 100% merino wol. Licht, warm en heerlijk zacht op de huid. Machine-wasbaar op 30°. Valt normaal — bestel je eigen maat.', 'truien', 12900, 'published', true),
     ('c0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001',
-     'Wide Leg Broek — Zwart', 'Elegante wide-leg broek met hoge taille. Gemaakt van gerecycled polyester.', 'broeken', 9900, 'published', false)
+     'Wide Leg Broek — Zwart', 'Elegante wide-leg broek met hoge taille. Gemaakt van gerecycled polyester. Valt wijd — bestel je normale maat.', 'broeken', 9900, 'published', false)
   ON CONFLICT (id) DO NOTHING;
 
   -- Producten Roos & Co
   INSERT INTO public.products (id, brand_id, title, description, category, base_price_cents, status, featured)
   VALUES
     ('c0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000002',
-     'Grafisch Hoodie — Oranje/Zwart', 'Oversized hoodie met exclusieve Roos-print. 350 gram fleece.', 'hoodies', 8900, 'published', true),
+     'Grafisch Hoodie — Oranje/Zwart', 'Oversized hoodie met exclusieve Roos-print. 350 gram fleece. Warm, comfortabel en opvallend aanwezig.', 'hoodies', 8900, 'published', true),
     ('c0000000-0000-0000-0000-000000000004', 'a0000000-0000-0000-0000-000000000002',
-     'Cargo Broek — Groen', 'Functionele cargo broek met zes zakken. Stretch katoen.', 'broeken', 11900, 'published', false)
+     'Cargo Broek — Groen', 'Functionele cargo broek met zes zakken. Denim-look van stretch katoen. Perfect voor de stad.', 'broeken', 11900, 'published', false)
   ON CONFLICT (id) DO NOTHING;
 
   -- Producten Label Mila
   INSERT INTO public.products (id, brand_id, title, description, category, base_price_cents, status, featured)
   VALUES
     ('c0000000-0000-0000-0000-000000000005', 'a0000000-0000-0000-0000-000000000003',
-     'Asymmetrische Blazer — Ecru', 'Avant-garde blazer met asymmetrische sluiting. GOTS-gecertificeerd linnen.', 'jassen', 21900, 'published', true)
+     'Asymmetrische Blazer — Ecru', 'Avant-garde blazer met asymmetrische sluiting. GOTS-gecertificeerd linnen. Draagbaar als jasje of jurk.', 'jassen', 21900, 'published', true)
   ON CONFLICT (id) DO NOTHING;
 
   -- Producten De Draad
   INSERT INTO public.products (id, brand_id, title, description, category, base_price_cents, status, featured)
   VALUES
     ('c0000000-0000-0000-0000-000000000006', 'a0000000-0000-0000-0000-000000000004',
-     'Handgebreide Vest — Meerkleurig', 'Unieke vest met kleurrijke strepen. Handgebreid, 100% Alpaca wol. Levertijd 2-4 weken.', 'truien', 18900, 'published', false)
+     'Handgebreide Vest — Meerkleurig', 'Unieke vest met kleurrijke strepen. Handgebreid in Groningen, 100% Alpaca wol. Levertijd 2-4 weken.', 'truien', 18900, 'published', false)
   ON CONFLICT (id) DO NOTHING;
+
+  -- Product afbeeldingen (Unsplash kleding foto's)
+  INSERT INTO public.product_images (product_id, url, position)
+  VALUES
+    -- Studio Noor trui
+    ('c0000000-0000-0000-0000-000000000001', 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&q=80', 0),
+    ('c0000000-0000-0000-0000-000000000001', 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&q=80', 1),
+    -- Studio Noor broek
+    ('c0000000-0000-0000-0000-000000000002', 'https://images.unsplash.com/photo-1594938298603-c8148c4b8b79?w=800&q=80', 0),
+    ('c0000000-0000-0000-0000-000000000002', 'https://images.unsplash.com/photo-1551854838-212c50b4c184?w=800&q=80', 1),
+    -- Roos & Co hoodie
+    ('c0000000-0000-0000-0000-000000000003', 'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&q=80', 0),
+    ('c0000000-0000-0000-0000-000000000003', 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&q=80', 1),
+    -- Roos & Co cargo
+    ('c0000000-0000-0000-0000-000000000004', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=80', 0),
+    -- Label Mila blazer
+    ('c0000000-0000-0000-0000-000000000005', 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80', 0),
+    ('c0000000-0000-0000-0000-000000000005', 'https://images.unsplash.com/photo-1548624149-f9b4f5d47ec4?w=800&q=80', 1),
+    -- De Draad vest
+    ('c0000000-0000-0000-0000-000000000006', 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&q=80', 0),
+    ('c0000000-0000-0000-0000-000000000006', 'https://images.unsplash.com/photo-1520975954732-35dd22299614?w=800&q=80', 1)
+  ON CONFLICT DO NOTHING;
 
   -- Varianten
   INSERT INTO public.product_variants (product_id, size, color, sku, stock_qty)
@@ -94,10 +120,15 @@ BEGIN
   VALUES
     ('brand',   'a0000000-0000-0000-0000-000000000001', 1, true),
     ('brand',   'a0000000-0000-0000-0000-000000000002', 2, true),
+    ('brand',   'a0000000-0000-0000-0000-000000000003', 3, true),
+    ('brand',   'a0000000-0000-0000-0000-000000000004', 4, true),
     ('product', 'c0000000-0000-0000-0000-000000000001', 1, true),
     ('product', 'c0000000-0000-0000-0000-000000000003', 2, true),
-    ('product', 'c0000000-0000-0000-0000-000000000005', 3, true)
+    ('product', 'c0000000-0000-0000-0000-000000000005', 3, true),
+    ('product', 'c0000000-0000-0000-0000-000000000002', 4, true),
+    ('product', 'c0000000-0000-0000-0000-000000000004', 5, true),
+    ('product', 'c0000000-0000-0000-0000-000000000006', 6, true)
   ON CONFLICT DO NOTHING;
 
-  RAISE NOTICE 'Seed geslaagd! % is nu admin, 4 merken en 6 producten aangemaakt.', v_owner_id;
+  RAISE NOTICE '✓ Seed geslaagd! % is nu admin, 4 merken, 6 producten met foto''s aangemaakt.', v_owner_id;
 END $$;

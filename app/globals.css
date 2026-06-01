@@ -2,26 +2,38 @@
 
 :root {
   --black: #0D0D0D;
-  --off-white: #F5F5EF;
+  --white: #FFFFFF;
+  --cream: #FAFAF7;
   --acid-green: #CDFF00;
+  --mint: #E8FFF0;
+  --coral: #FF6B4A;
+  --sand: #F5EDD8;
+  --gray-light: #F2F2F2;
+  --gray-mid: #E0E0E0;
+  --gray-text: #666666;
 }
 
 @theme inline {
   --color-black: var(--black);
-  --color-off-white: var(--off-white);
+  --color-white: var(--white);
+  --color-cream: var(--cream);
   --color-acid-green: var(--acid-green);
+  --color-coral: var(--coral);
+  --color-sand: var(--sand);
 }
 
 html {
-  background-color: var(--off-white);
+  background-color: var(--white);
   color: var(--black);
 }
 
 body {
-  background-color: var(--off-white);
+  background-color: var(--white);
   color: var(--black);
   font-family: system-ui, -apple-system, sans-serif;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {
@@ -34,39 +46,22 @@ body {
   outline-offset: 2px;
 }
 
-/* Smooth scrolling — respects prefers-reduced-motion */
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
-
-/* Mobile tap highlight off — eigen feedback via Framer Motion */
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Prevent layout shift on scrollbar appear */
 html {
   scrollbar-gutter: stable;
 }
 
-/* Better text rendering on mobile */
-body {
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
 }
 
-/* Overscroll rubber-band stays natural */
-body {
-  overscroll-behavior-y: auto;
-}
-
-/* Safe area insets for iPhone notch/home bar */
 .pb-safe {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
-/* Line clamp utilities */
 .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
 .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.line-clamp-3 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
