@@ -5,27 +5,28 @@ import { useState, useEffect } from 'react'
 import { ShoppingBag, Menu, X, Search, User } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useCart } from './CartProvider'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
+
+interface NavUser { email: string; role?: string }
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
-  const [user, setUser] = useState<{ email: string; role?: string } | null>(null)
+  const [navUser, setNavUser] = useState<NavUser | null>(null)
   const { itemCount } = useCart()
   const supabase = createClient()
 
+  async function loadUser(u: SupabaseUser) {
+    const { data } = await supabase.from('profiles').select('role').eq('id', u.id).single()
+    setNavUser({ email: u.email ?? '', role: data?.role ?? undefined })
+  }
+
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        supabase.from('profiles').select('role').eq('id', user.id).single()
-          .then(({ data }) => setUser({ email: user.email!, role: data?.role }))
-      }
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) loadUser(data.user)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      if (session?.user) {
-        supabase.from('profiles').select('role').eq('id', session.user.id).single()
-          .then(({ data }) => setUser({ email: session.user.email!, role: data?.role }))
-      } else {
-        setUser(null)
-      }
+      if (session?.user) loadUser(session.user)
+      else setNavUser(null)
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -33,12 +34,10 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-[#0D0D0D] text-[#F5F5EF]">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
-        {/* Logo */}
         <Link href="/" className="text-lg font-bold tracking-tight shrink-0">
           Mode<span className="text-[#CDFF00]">Scout</span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm">
           <Link href="/zoeken" className="hover:text-[#CDFF00] transition-colors">Ontdekken</Link>
           <Link href="/categorie/truien" className="hover:text-[#CDFF00] transition-colors">Truien</Link>
@@ -47,24 +46,23 @@ export default function Navbar() {
           <Link href="/categorie/hoodies" className="hover:text-[#CDFF00] transition-colors">Hoodies</Link>
         </nav>
 
-        {/* Actions */}
         <div className="flex items-center gap-3">
           <Link href="/zoeken" className="p-2 hover:text-[#CDFF00] transition-colors" aria-label="Zoeken">
             <Search size={20} />
           </Link>
 
-          {user ? (
+          {navUser ? (
             <div className="relative group">
               <button className="p-2 hover:text-[#CDFF00] transition-colors" aria-label="Account">
                 <User size={20} />
               </button>
               <div className="absolute right-0 top-full mt-1 w-48 bg-[#0D0D0D] border border-[#333] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all text-sm">
-                <div className="px-4 py-2 text-[#999] text-xs border-b border-[#333] truncate">{user.email}</div>
+                <div className="px-4 py-2 text-[#999] text-xs border-b border-[#333] truncate">{navUser.email}</div>
                 <Link href="/bestellingen" className="block px-4 py-2 hover:text-[#CDFF00] transition-colors">Mijn bestellingen</Link>
-                {(user.role === 'brand' || user.role === 'admin') && (
+                {(navUser.role === 'brand' || navUser.role === 'admin') && (
                   <Link href="/dashboard" className="block px-4 py-2 hover:text-[#CDFF00] transition-colors">Dashboard</Link>
                 )}
-                {user.role === 'admin' && (
+                {navUser.role === 'admin' && (
                   <Link href="/admin" className="block px-4 py-2 hover:text-[#CDFF00] transition-colors">Admin</Link>
                 )}
                 <button
@@ -90,18 +88,12 @@ export default function Navbar() {
             )}
           </Link>
 
-          {/* Hamburger */}
-          <button
-            className="md:hidden p-2 hover:text-[#CDFF00] transition-colors"
-            onClick={() => setOpen(!open)}
-            aria-label="Menu"
-          >
+          <button className="md:hidden p-2 hover:text-[#CDFF00] transition-colors" onClick={() => setOpen(!open)} aria-label="Menu">
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
       {open && (
         <nav className="md:hidden border-t border-[#222] px-4 py-4 flex flex-col gap-4 text-sm">
           <Link href="/zoeken" onClick={() => setOpen(false)} className="hover:text-[#CDFF00]">Ontdekken</Link>
@@ -109,9 +101,9 @@ export default function Navbar() {
           <Link href="/categorie/broeken" onClick={() => setOpen(false)} className="hover:text-[#CDFF00]">Broeken</Link>
           <Link href="/categorie/jassen" onClick={() => setOpen(false)} className="hover:text-[#CDFF00]">Jassen</Link>
           <Link href="/categorie/hoodies" onClick={() => setOpen(false)} className="hover:text-[#CDFF00]">Hoodies</Link>
-          {!user && <Link href="/inloggen" onClick={() => setOpen(false)} className="hover:text-[#CDFF00]">Inloggen / Registreren</Link>}
-          {user && <Link href="/bestellingen" onClick={() => setOpen(false)} className="hover:text-[#CDFF00]">Mijn bestellingen</Link>}
-          {(user?.role === 'brand' || user?.role === 'admin') && (
+          {!navUser && <Link href="/inloggen" onClick={() => setOpen(false)} className="hover:text-[#CDFF00]">Inloggen / Registreren</Link>}
+          {navUser && <Link href="/bestellingen" onClick={() => setOpen(false)} className="hover:text-[#CDFF00]">Mijn bestellingen</Link>}
+          {(navUser?.role === 'brand' || navUser?.role === 'admin') && (
             <Link href="/dashboard" onClick={() => setOpen(false)} className="hover:text-[#CDFF00]">Dashboard</Link>
           )}
         </nav>
