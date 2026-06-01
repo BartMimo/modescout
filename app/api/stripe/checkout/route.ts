@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       const v = variants.find(v => v.id === item.variantId)
       if (!v) return NextResponse.json({ error: `Product niet gevonden: ${item.title}` }, { status: 400 })
 
-      const product = v.product as { status: string; base_price_cents: number; brand: { status: string; charges_enabled: boolean } } | null
+      const product = (v.product as unknown) as { status: string; base_price_cents: number; brand: { status: string; charges_enabled: boolean } } | null
       if (!product || product.status !== 'published') {
         return NextResponse.json({ error: `Product niet beschikbaar: ${item.title}` }, { status: 400 })
       }
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     let totalCents = 0
     for (const item of items) {
       const v = variants.find(v => v.id === item.variantId)!
-      const product = v.product as { base_price_cents: number }
+      const product = (v.product as unknown) as { base_price_cents: number }
       const price = v.price_cents ?? product.base_price_cents
       totalCents += price * item.quantity
     }
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
     // Create order items
     const orderItems = items.map(item => {
       const v = variants.find(v => v.id === item.variantId)!
-      const product = v.product as { base_price_cents: number; brand: { id: string } }
+      const product = (v.product as unknown) as { base_price_cents: number; brand: { id: string } }
       const price = v.price_cents ?? product.base_price_cents
       return {
         order_id: order.id,
