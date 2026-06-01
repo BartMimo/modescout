@@ -77,7 +77,7 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   }> = {}
 
   for (const item of items) {
-    const brand = item.brand as { id: string; stripe_account_id: string; commission_rate: number }
+    const brand = (item.brand as unknown) as { id: string; stripe_account_id: string; commission_rate: number }
     if (!brand?.stripe_account_id) continue
 
     const itemTotal = item.unit_price_cents * item.quantity
