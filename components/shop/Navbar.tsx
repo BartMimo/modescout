@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { ShoppingBag, Menu, X, Search, User, ChevronDown } from 'lucide-react'
+import { ShoppingBag, Search, Bell, MapPin } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useCart } from './CartProvider'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
@@ -10,7 +10,6 @@ import type { User as SupabaseUser } from '@supabase/supabase-js'
 interface NavUser { email: string; role?: string }
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false)
   const [navUser, setNavUser] = useState<NavUser | null>(null)
   const { itemCount } = useCart()
   const supabase = createClient()
@@ -30,98 +29,74 @@ export default function Navbar() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#F2F2F2]">
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        <Link href="/" className="font-black text-xl tracking-tight shrink-0">
-          Mode<span className="bg-[#CDFF00] px-1 rounded">Scout</span>
+    <header className="sticky top-0 z-50" style={{ background: 'var(--cream)', borderBottom: '1px solid var(--line)' }}>
+      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
+        {/* Logo */}
+        <Link href="/" className="shrink-0" style={{ fontFamily: 'Fredoka', fontWeight: 600, fontSize: 21, letterSpacing: '-0.02em', color: 'var(--ink)' }}>
+          Modescout<span style={{ color: 'var(--orange)' }}>.</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
-          {[
-            { href: '/zoeken', label: 'Ontdekken' },
-            { href: '/categorie/truien', label: 'Truien' },
-            { href: '/categorie/broeken', label: 'Broeken' },
-            { href: '/categorie/jassen', label: 'Jassen' },
-            { href: '/categorie/hoodies', label: 'Hoodies' },
-          ].map(item => (
-            <Link key={item.href} href={item.href} className="px-3 py-2 rounded-full hover:bg-[#F2F2F2] transition-colors">
-              {item.label}
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-1">
+          {[['/', 'Home'], ['/zoeken', 'Ontdek'], ['/categorie/truien', 'Truien'], ['/categorie/broeken', 'Broeken'], ['/categorie/jassen', 'Jassen']].map(([href, label]) => (
+            <Link key={href} href={href}
+              className="px-3 py-2 rounded-full text-sm transition-colors hover:bg-white"
+              style={{ fontWeight: 700, color: 'var(--ink2)' }}>
+              {label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-1">
-          <Link href="/zoeken" className="p-2 rounded-full hover:bg-[#F2F2F2] transition-colors" aria-label="Zoeken">
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          <Link href="/zoeken" className="p-2 rounded-full transition-colors hover:bg-white" style={{ color: 'var(--ink2)' }} aria-label="Zoeken">
             <Search size={20} />
+          </Link>
+
+          <Link href="/mandje" className="relative p-2 rounded-full transition-colors hover:bg-white" style={{ color: 'var(--ink2)' }} aria-label="Mandje">
+            <ShoppingBag size={20} />
+            {itemCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-[var(--cream)]"
+                style={{ background: 'var(--orange)', fontFamily: 'Nunito' }}>
+                {itemCount > 9 ? '9+' : itemCount}
+              </span>
+            )}
           </Link>
 
           {navUser ? (
             <div className="relative group">
-              <button className="flex items-center gap-1.5 px-3 py-2 rounded-full hover:bg-[#F2F2F2] transition-colors text-sm font-medium" aria-label="Account">
-                <User size={16} />
-                <ChevronDown size={14} className="text-[#999]" />
+              <button className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-black transition-colors hover:bg-white"
+                style={{ background: 'var(--orange-t)', color: 'var(--orange-d)', fontFamily: 'Fredoka' }}>
+                {navUser.email[0].toUpperCase()}
               </button>
-              <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-[#E0E0E0] rounded-2xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all text-sm overflow-hidden">
-                <div className="px-4 py-3 text-[#666] text-xs border-b border-[#F2F2F2] truncate">{navUser.email}</div>
+              <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl shadow-lg overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all text-sm"
+                style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}>
+                <div className="px-4 py-3 text-xs border-b truncate" style={{ color: 'var(--ink2)', borderColor: 'var(--line)', background: 'var(--cream)' }}>{navUser.email}</div>
                 <div className="p-1.5 space-y-0.5">
-                  <Link href="/bestellingen" className="block px-3 py-2 rounded-xl hover:bg-[#F2F2F2] transition-colors">Mijn bestellingen</Link>
+                  <Link href="/bestellingen" className="block px-3 py-2 rounded-xl transition-colors hover:bg-[var(--cream)]" style={{ fontWeight: 700, color: 'var(--ink)' }}>Mijn bestellingen</Link>
                   {(navUser.role === 'brand' || navUser.role === 'admin') && (
-                    <Link href="/dashboard" className="block px-3 py-2 rounded-xl hover:bg-[#F2F2F2] transition-colors">Dashboard</Link>
+                    <Link href="/dashboard" className="block px-3 py-2 rounded-xl transition-colors hover:bg-[var(--cream)]" style={{ fontWeight: 700, color: 'var(--ink)' }}>Dashboard</Link>
                   )}
                   {navUser.role === 'admin' && (
-                    <Link href="/admin" className="block px-3 py-2 rounded-xl hover:bg-[#F2F2F2] transition-colors">Admin</Link>
+                    <Link href="/admin" className="block px-3 py-2 rounded-xl transition-colors hover:bg-[var(--cream)]" style={{ fontWeight: 700, color: 'var(--ink)' }}>Admin</Link>
                   )}
                   <button onClick={() => supabase.auth.signOut()}
-                    className="w-full text-left block px-3 py-2 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors border-t border-[#F2F2F2] mt-1 pt-2">
+                    className="w-full text-left block px-3 py-2 rounded-xl transition-colors hover:bg-red-50"
+                    style={{ fontWeight: 700, color: 'var(--ink2)', borderTop: '1px solid var(--line)', marginTop: 4, paddingTop: 8 }}>
                     Uitloggen
                   </button>
                 </div>
               </div>
             </div>
           ) : (
-            <Link href="/inloggen" className="p-2 rounded-full hover:bg-[#F2F2F2] transition-colors" aria-label="Inloggen">
-              <User size={20} />
+            <Link href="/inloggen"
+              className="hidden md:flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition-all hover:opacity-90"
+              style={{ background: 'var(--orange)', color: '#fff', fontFamily: 'Fredoka', fontWeight: 600 }}>
+              Inloggen
             </Link>
           )}
-
-          <Link href="/mandje" className="relative p-2 rounded-full hover:bg-[#F2F2F2] transition-colors" aria-label="Mandje">
-            <ShoppingBag size={20} />
-            {itemCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-[#CDFF00] text-[#0D0D0D] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white">
-                {itemCount > 9 ? '9+' : itemCount}
-              </span>
-            )}
-          </Link>
-
-          <button className="md:hidden p-2 rounded-full hover:bg-[#F2F2F2] transition-colors" onClick={() => setOpen(!open)} aria-label="Menu">
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
         </div>
       </div>
-
-      {open && (
-        <div className="md:hidden bg-white border-t border-[#F2F2F2] px-4 py-3 space-y-0.5">
-          {[
-            { href: '/zoeken', label: 'Ontdekken' },
-            { href: '/categorie/truien', label: 'Truien' },
-            { href: '/categorie/broeken', label: 'Broeken' },
-            { href: '/categorie/jassen', label: 'Jassen' },
-            { href: '/categorie/hoodies', label: 'Hoodies' },
-          ].map(item => (
-            <Link key={item.href} href={item.href} onClick={() => setOpen(false)}
-              className="block px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm transition-colors">
-              {item.label}
-            </Link>
-          ))}
-          <div className="border-t border-[#F2F2F2] pt-2 mt-2 space-y-0.5">
-            {!navUser && <Link href="/inloggen" onClick={() => setOpen(false)} className="block px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm">Inloggen</Link>}
-            {navUser && <Link href="/bestellingen" onClick={() => setOpen(false)} className="block px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm">Mijn bestellingen</Link>}
-            {(navUser?.role === 'brand' || navUser?.role === 'admin') && (
-              <Link href="/dashboard" onClick={() => setOpen(false)} className="block px-3 py-2.5 rounded-xl hover:bg-[#F2F2F2] font-medium text-sm">Dashboard</Link>
-            )}
-          </div>
-        </div>
-      )}
     </header>
   )
 }
